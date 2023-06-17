@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Power Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 20px;
+    }
+
+    .card {
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 5px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    .card p {
+      margin-top: 10px;
+      font-size: 18px;
+      color: #777;
+    }
+
+    .gauge {
+      width: 200px;
+      height: 150px;
+      margin: 0 auto;
+    }
+
+    .value {
+      font-size: 24px;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Power Dashboard</h1>
+  <div class="dashboard">
+    <div class="card">
+      <div class="gauge" id="voltageGauge"></div>
+      <h2>Voltage</h2>
+      <p>Current voltage: <span id="voltageValue">0V</span></p>
+    </div>
+    <div class="card">
+      <div class="gauge" id="currentGauge"></div>
+      <h2>Current</h2>
+      <p>Current current: <span id="currentValue">0A</span></p>
+    </div>
+    <div class="card">
+      <div class="gauge" id="frequencyGauge"></div>
+      <h2>Frequency</h2>
+      <p>Current frequency: <span id="frequencyValue">0Hz</span></p>
+    </div>
+    <div class="card">
+      <div class="gauge" id="powerGauge"></div>
+      <h2>Power Consumption</h2>
+      <p>Current power consumption: <span id="powerValue">0KW</span></p>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.1/justgage.min.js"></script>
+  <script>
+    var voltageGauge = new JustGage({
+      id: "voltageGauge",
+      value: 0,
+      min: 110,
+      max: 600,
+      title: "Voltage (V)",
+      label: "V"
+    });
+
+    var currentGauge = new JustGage({
+      id: "currentGauge",
+      value: 0,
+      min: 0,
+      max: 20,
+      title: "Current (A)",
+      label: "A"
+    });
+
+    var frequencyGauge = new JustGage({
+      id: "frequencyGauge",
+      value: 0,
+      min: 0,
+      max: 100,
+      title: "Frequency (Hz)",
+      label: "Hz"
+    });
+
+    var powerGauge = new JustGage({
+      id: "powerGauge",
+      value: 0,
+      min: 0,
+      max: 10,
+      title: "Power Consumption (KW)",
+      label: "KW"
+    });
+
+    // Update gauge values
+    function updateGaugeValues(voltage, current, frequency, power) {
+      voltageGauge.refresh(voltage);
+      currentGauge.refresh(current);
+      frequencyGauge.refresh(frequency);
+      powerGauge.refresh(power);
+      document.getElementById("voltageValue").textContent = voltage + "V";
+      document.getElementById("currentValue").textContent = current + "A";
+      document.getElementById("frequencyValue").textContent = frequency + "Hz";
+      document.getElementById("powerValue").textContent = power + "KW";
+    }
+
+    // Example data update
+    setInterval(function() {
+      var voltage = Math.random() * 300;
+      var current = Math.random() * 20;
+      var frequency = Math.random() * 100;
+      var power = Math.random() * 10;
+      updateGaugeValues(voltage, current, frequency, power);
+    }, 2000);
+  </script>
+</body>
+</html>
