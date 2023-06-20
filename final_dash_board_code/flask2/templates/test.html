@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Power Dashboard</title>
+  <link rel="stylesheet" href="./cards.css">
+</head>
+<body>
+
+  <div class="dashboard_main" id="dashboard_main">
+  
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.1/justgage.min.js"></script>
+
+  <script>
+    const dashboardMain = document.getElementById('dashboard_main');
+    const num = 20;
+  
+    const num_card = 4;
+
+    const gaugelist = [
+        "etwert",
+        "voltageGauge_",
+        "currentGauge_",
+        "frequencyGauge_",
+        "powerGauge_"
+    ];
+    const gaugelist_1 = [
+        ['Current voltage: ', 'v'],
+        ['Voltage: ', 'V'],
+        ['Current: ', 'A'],
+        ['Frequency: ', 'Hz'],
+        ['Power consumption: ', 'KW']
+    ];
+
+    const gaugelist_2 = [
+        "etwert",
+        "voltageValue_",
+        "currentValue_",
+        "frequencyValue_",
+        "powerValue_"
+    ];
+    
+    for (var i = 1; i <= num; i++) {
+
+            const dashboardTitle = document.createElement('div');
+            dashboardTitle.classList.add('dashboard');
+
+            const dashboardTitle_1 = document.createElement('h1');
+            dashboardTitle_1.textContent = `Power Dashboard:  ${i}`;
+
+            const dashboard_in = document.createElement('div');
+            dashboard_in.classList.add('dashboard_in');
+
+
+
+            dashboardMain.appendChild(dashboardTitle);
+            dashboardTitle.appendChild(dashboardTitle_1);
+            dashboardTitle.appendChild(dashboard_in);
+
+            for (var j = 1; j  <= num_card; j++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+
+                const gauge = document.createElement('div');
+                gauge.classList.add('gauge');
+                gauge.id = `${gaugelist[j]}${i}`;
+
+                const val = document.createElement('h2');
+                val.textContent = gaugelist_1[j][0];
+
+                const p = document.createElement('p');
+                p.textContent = `Current ${gaugelist_1[j][0]}`;
+
+                const valueSpan = document.createElement('span');
+                valueSpan.id = `${gaugelist_2[j]}${i}`;
+                valueSpan.textContent = `0${gaugelist_1[j][1]}`;
+
+                
+
+                dashboard_in.appendChild(card);
+                card.appendChild(gauge);
+                card.appendChild(val);
+                card.appendChild(p);
+                p.appendChild(valueSpan);
+            };
+    };
+
+    var gauges = [];
+
+for (var i = 1; i <= num; i++) {
+  var voltageGauge = new JustGage({
+    id: "voltageGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 300,
+    title: "Voltage (V)",
+    label: "V"
+  });
+
+  var currentGauge = new JustGage({
+    id: "currentGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 20,
+    title: "Current (A)",
+    label: "A"
+  });
+
+  var frequencyGauge = new JustGage({
+    id: "frequencyGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 100,
+    title: "Frequency (Hz)",
+    label: "Hz"
+  });
+
+  var powerGauge = new JustGage({
+    id: "powerGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 10,
+    title: "Power Consumption (KW)",
+    label: "KW"
+  });
+
+  gauges.push({
+    voltage: voltageGauge,
+    current: currentGauge,
+    frequency: frequencyGauge,
+    power: powerGauge
+  });
+}
+
+// Update gauge values
+function updateGaugeValues(gauges, voltage, current, frequency, power) {
+  gauges.forEach(function(gauge) {
+    gauge.voltage.refresh(voltage);
+    gauge.current.refresh(current);
+    gauge.frequency.refresh(frequency);
+    gauge.power.refresh(power);
+  });
+
+  for (var i = 1; i <= num; i++) {
+    document.getElementById("voltageValue_" + i).textContent = voltage + "V";
+    document.getElementById("currentValue_" + i).textContent = current + "A";
+    document.getElementById("frequencyValue_" + i).textContent = frequency + "Hz";
+    document.getElementById("powerValue_" + i).textContent = power + "KW";
+  }
+
+}
+
+// Example data update
+setInterval(function() {
+  var voltage = Math.floor(Math.random() * 301); // Generates a random integer between 0 and 300 (inclusive)
+  var current = Math.floor(Math.random() * 21); // Generates a random integer between 0 and 20 (inclusive)
+  var frequency = Math.floor(Math.random() * 101); // Generates a random integer between 0 and 100 (inclusive)
+  var power = Math.floor(Math.random() * 11); // Generates a random integer between 0 and 10 (inclusive)
+  updateGaugeValues(gauges, voltage, current, frequency, power);
+}, 2000);
+
+  </script>
+</body>
+</html>
+

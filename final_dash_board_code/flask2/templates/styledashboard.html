@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Power Dashboard</title>
+  <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/cards.css') }}">
+</head>
+<body>
+
+  <div class="dashboard_main" id="dashboard_main">
+  
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.1.4/raphael-min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.1/justgage.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+  <script>
+
+    var socket = io.connect("http://" + document.domain + ":" + location.port);
+    var voltageGauge; // Define the voltage gauge globally
+var currentGauge;
+
+    const dashboardMain = document.getElementById('dashboard_main');
+    const num = "{{ variable_value }}";
+  
+    const num_card = 4;
+
+    const gaugelist = [
+        "etwert",
+        "voltageGauge_",
+        "currentGauge_",
+        "frequencyGauge_",
+        "powerGauge_"
+    ];
+    const gaugelist_1 = [
+        ['Current voltage: ', 'v'],
+        ['Voltage: ', 'V'],
+        ['Current: ', 'A'],
+        ['Frequency: ', 'Hz'],
+        ['Power consumption: ', 'KW']
+    ];
+
+    const gaugelist_2 = [
+        "etwert",
+        "voltageValue_",
+        "currentValue_",
+        "frequencyValue_",
+        "powerValue_"
+    ];
+    
+    for (var i = 1; i <= num; i++) {
+
+            const dashboardTitle = document.createElement('div');
+            dashboardTitle.classList.add('dashboard');
+
+            const dashboardTitle_1 = document.createElement('h1');
+            dashboardTitle_1.textContent = `Power Dashboard:  ${i}`;
+
+            const dashboard_in = document.createElement('div');
+            dashboard_in.classList.add('dashboard_in');
+
+
+
+            dashboardMain.appendChild(dashboardTitle);
+            dashboardTitle.appendChild(dashboardTitle_1);
+            dashboardTitle.appendChild(dashboard_in);
+
+            for (var j = 1; j  <= num_card; j++) {
+                const card = document.createElement('div');
+                card.classList.add('card');
+
+                const gauge = document.createElement('div');
+                gauge.classList.add('gauge');
+                gauge.id = `${gaugelist[j]}${i}`;
+
+                const val = document.createElement('h2');
+                val.textContent = gaugelist_1[j][0];
+
+                const p = document.createElement('p');
+                p.textContent = `Current ${gaugelist_1[j][0]}`;
+
+                const valueSpan = document.createElement('span');
+                valueSpan.id = `${gaugelist_2[j]}${i}`;
+                valueSpan.textContent = `0${gaugelist_1[j][1]}`;
+
+                
+
+                dashboard_in.appendChild(card);
+                card.appendChild(gauge);
+                card.appendChild(val);
+                card.appendChild(p);
+                p.appendChild(valueSpan);
+            };
+    };
+
+    var gauges = [];
+
+for (var i = 1; i <= num; i++) {
+ 
+  var voltageGauge = new JustGage({
+    id: "voltageGauge_" + i,
+    
+    value: 0,
+    min: 0,
+    max: 300,
+    title: "Voltage (V)",
+    label: "V"
+  });
+
+  var currentGauge = new JustGage({
+    id: "currentGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 100,
+    title: "Current (A)",
+    label: "A"
+  });
+
+  var frequencyGauge = new JustGage({
+    id: "frequencyGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 100,
+    title: "Frequency (Hz)",
+    label: "Hz"
+  });
+
+  var powerGauge = new JustGage({
+    id: "powerGauge_" + i,
+    value: 0,
+    min: 0,
+    max: 110,
+    title: "Power Consumption (KW)",
+    label: "KW"
+  });
+
+  gauges.push({
+    voltage: voltageGauge,
+    current: currentGauge,
+    frequency: frequencyGauge,
+    power: powerGauge
+  });
+}
+
+
+
+socket.on("update", function(data) {
+  var update_values = data.value; // Update the frequency value
+
+  for (var i = 0; i < update_values.length; i++) {
+    var innerArray = update_values[i];
+
+    for (var j = 0; j < innerArray.length; j++) {
+      var key = Object.keys(innerArray[j])[0];
+      var value = innerArray[j][key];
+
+      if (gauges[i] && gauges[i][key]) {
+        gauges[i][key].refresh(value);
+        document.getElementById(key + 'Value_' + (i + 1)).textContent = value + ' ' + gaugelist_1[j][1];
+      }
+    }
+  }
+});
+
+
+/*
+
+// Example data update
+setInterval(function() {
+
+  socket.emit("update");
+  
+}, 2000);
+
+
+
+socket.on("update", function(data) {
+  var update_values = data.value; // Update the frequency value
+
+  update_values_length = update_values.length;
+  update_innerArray_length = 0;
+
+  
+  var x = 0;
+  var y = 1;
+  var xy = 0;
+
+  for (var i = 0; i < update_values_length; i++) {
+
+    if (x === (num*4)) {
+      x = 0
+    }
+    if (xy === 4) {
+      xy = 0
+      y = y + 1
+    }
+
+
+    var innerArray = update_values[i];
+    update_innerArray_length = innerArray.length;
+
+    var_name = Object.keys(update_values[i][xy])
+    var_values =Object.values(update_values[i][xy])
+
+    var gau = var_name[0] + "Gauge";
+    var gauID = var_name[0] + `Value_${y}`;
+ 
+    //console.log(gau)
+    //console.log(gauID)
+
+    var gaugeObject = var_name[0]
+
+    console.log(gaugeObject)
+
+    //gaugeObject.refresh(var_values[0]);
+    //document.getElementById(gauID).textContent = var_values[0] + "Hz";
+
+    var x = x + 1;
+    var xy = xy + 1
+  }
+
+ 
+
+  for (var key in update_values) {
+    if (x === (num*4)) {
+      x = 0
+    }
+    if (xy === 4) {
+      xy = 0
+      y = y + 1
+    }
+
+    var df = update_values[x];
+    var dfs = update_values[y];
+    
+    var gau = dfs[0] + "Gauge";
+    
+    var gauID = dfs[0] + `Value_${y}`;
+    
+    // var gaugeObject = window[gau];
+    var gaugeObject = gauges[y - 1][dfs[0]]; // Access gauge object from gauges array
+    gaugeObject.refresh(dfs[1]);
+    document.getElementById(gauID).textContent = dfs[1] + "Hz";
+
+    var x = x + 1;
+    var xy = xy + 1
+  } 
+});*/
+
+  </script>
+</body>
+</html>
+
+

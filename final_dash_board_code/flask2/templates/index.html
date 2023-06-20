@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Modbus Updates</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.2/socket.io.js"></script>
+    <script>
+        const socket = io.connect('http://localhost:5000');
+
+        socket.on('update', function(data) {
+            console.log('Received update:', data.value);
+            // Do something with the received data
+        });
+    </script>
+</head>
+<body>
+    <h1>Modbus Updates</h1>
+    <p>Check the browser console to see the updates.</p>
+</body>
+</html>

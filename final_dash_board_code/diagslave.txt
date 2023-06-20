@@ -1,0 +1,1 @@
+diagslave -b 9600 -p none -m rtu COM1
