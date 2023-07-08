@@ -2,10 +2,10 @@ from pymodbus.client.sync import ModbusSerialClient
 import time
 import random
 
-client = ModbusSerialClient(method="rtu", port="COM5", stopbits=1, bytesize=8, parity='N', baudrate=9600)
+client = ModbusSerialClient(method="rtu", port="COM7", stopbits=1, bytesize=8, parity='N', baudrate=9600)
 
 update_values = {
-        "voltage": 3546,
+        "voltage": 3926,
         "current": 3654,
         "frequency": 3756,
         "power": 3878
